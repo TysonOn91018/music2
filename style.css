@@ -3162,7 +3162,7 @@ body.is-user #userLeft .btn--ghost {
 }
 
 /* iPad: keep desktop-like layout without redesign */
-@media (min-width: 744px) and (max-width: 1024px) {
+@media (min-width: 744px) and (max-width: 1366px) {
   .deck {
     grid-template-columns: 1.1fr 0.9fr !important;
   }
@@ -3206,13 +3206,12 @@ body.is-user #userLeft .btn--ghost {
   }
 
   body.is-index .vinyl {
-    left: clamp(1%, 5vw, 9%) !important;
-    top: clamp(34%, 38vh, 42%) !important;
-    width: min(30vw, 38vh) !important;
-    min-width: 250px !important;
-    max-width: 380px !important;
-    transform: translate(-58%, -50%) !important;
-    opacity: 0.78 !important;
+    left: clamp(-8%, -2vw, 2%) !important;
+    top: clamp(36%, 40vh, 44%) !important;
+    width: clamp(240px, 26vw, 340px) !important;
+    transform: translate(-62%, -50%) !important;
+    opacity: 0.68 !important;
+    z-index: 0 !important;
   }
 
   body.is-player #playerRight .detail,
