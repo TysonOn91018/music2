@@ -3206,9 +3206,10 @@ body.is-user #userLeft .btn--ghost {
   }
 
   body.is-index .vinyl {
-    left: 24% !important;
-    top: 40% !important;
-    width: min(560px, 54vw) !important;
+    left: 12% !important;
+    top: 38% !important;
+    width: min(420px, 38vw) !important;
+    opacity: 0.86 !important;
   }
 
   body.is-player #playerRight .detail,
