@@ -3206,10 +3206,13 @@ body.is-user #userLeft .btn--ghost {
   }
 
   body.is-index .vinyl {
-    left: 12% !important;
-    top: 38% !important;
-    width: min(420px, 38vw) !important;
-    opacity: 0.86 !important;
+    left: clamp(1%, 5vw, 9%) !important;
+    top: clamp(34%, 38vh, 42%) !important;
+    width: min(30vw, 38vh) !important;
+    min-width: 250px !important;
+    max-width: 380px !important;
+    transform: translate(-58%, -50%) !important;
+    opacity: 0.78 !important;
   }
 
   body.is-player #playerRight .detail,
