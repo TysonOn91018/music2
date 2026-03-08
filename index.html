@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark light" />
-    <title>気分ジュークボックス Mood Player</title>
+    <title>気分ジュークボックス</title>
     <meta name="description" content="曲を選ぶんじゃなくて、気分を選ぶ。リラックス、失恋、アガりたい、静かに過ごしたい。気分を選んで、あとはおまかせ。" />
     <link rel="preconnect" href="https://samplelib.com" />
-    <link rel="stylesheet" href="./style.css?v=20260308h" />
+    <link rel="stylesheet" href="./style.css?v=20260308ba" />
   </head>
   <body>
     <div class="bg">
@@ -19,23 +19,22 @@
 
       <section class="panel">
         <div id="burst" class="burst" aria-hidden="true"></div>
-        <div class="deck" aria-label="Mood Player 再生パネル">
+        <div class="deck" aria-label="気分プレーヤー 再生パネル">
           <div class="deck__left">
             <div id="pickLeft" class="view view--active" aria-label="気分リストを選ぶ">
             </div>
 
             <div id="playerLeft" class="view" aria-label="選んだ気分のプレイリスト">
               <div class="listHead">
-                <div class="listHead__label">Playlist</div>
-                <div class="listHead__sub" id="playlistSub">Mood playlist</div>
+                <div class="listHead__label">プレイリスト</div>
+                <div class="listHead__sub" id="playlistSub">気分プレイリスト</div>
               </div>
               <div id="trackList" class="list" role="list"></div>
             </div>
 
-            <div id="userLeft" class="view" aria-label="用户资料">
+            <div id="userLeft" class="view" aria-label="ユーザープロフィール">
               <div class="listHead">
-                <button id="backToHomeBtn" class="btn btn--ghost btn--back" type="button" style="margin-bottom: 12px;">← 返回首页</button>
-                <div class="listHead__label">我的资料</div>
+                <div class="listHead__label">マイプロフィール</div>
                 <div class="listHead__sub" id="userEmail">—</div>
               </div>
               <div class="userProfile">
@@ -44,33 +43,33 @@
                   <span id="profileAvatarFallback">👤</span>
                 </div>
                 <div class="userProfile__name" id="profileName">—</div>
-                <div class="userProfile__bio" id="profileBioText">这个人很神秘，还没有填写简介。</div>
+                <div class="userProfile__bio" id="profileBioText">まだ自己紹介がありません。</div>
                 <div class="userProfile__stats">
                   <div class="userProfile__stat">
-                    <span class="userProfile__statLabel">👥 好友</span>
+                    <span class="userProfile__statLabel">👥 友だち</span>
                     <span class="userProfile__statValue" id="friendCount">0</span>
                   </div>
                 </div>
                 <div class="profileEditor">
                   <div class="profileEditor__row">
-                    <label class="profileEditor__label" for="profileEditName">昵称</label>
-                    <input id="profileEditName" class="profileEditor__input" type="text" maxlength="30" placeholder="输入新昵称" />
+                    <label class="profileEditor__label" for="profileEditName">表示名</label>
+                    <input id="profileEditName" class="profileEditor__input" type="text" maxlength="30" placeholder="新しい表示名を入力" />
                   </div>
                   <div class="profileEditor__row">
-                    <label class="profileEditor__label" for="profileEditBio">个人简介</label>
-                    <textarea id="profileEditBio" class="profileEditor__input profileEditor__textarea" maxlength="120" placeholder="写点关于你的内容"></textarea>
+                    <label class="profileEditor__label" for="profileEditBio">自己紹介</label>
+                    <textarea id="profileEditBio" class="profileEditor__input profileEditor__textarea" maxlength="120" placeholder="自己紹介を書いてください"></textarea>
                   </div>
                   <div class="profileEditor__row">
-                    <label class="profileEditor__label" for="profileAvatarUrl">头像图片 URL</label>
+                    <label class="profileEditor__label" for="profileAvatarUrl">アイコン画像 URL</label>
                     <input id="profileAvatarUrl" class="profileEditor__input" type="url" placeholder="https://..." />
                   </div>
-                  <button id="profileSaveBtn" class="btn btn--primary btn--small" type="button">保存资料</button>
+                  <button id="profileSaveBtn" class="btn btn--primary btn--small" type="button">保存</button>
                   <div class="profileEditor__row">
-                    <label class="profileEditor__label" for="profileNewPassword">修改密码</label>
-                    <input id="profileNewPassword" class="profileEditor__input" type="password" minlength="6" placeholder="新密码（至少 6 位）" />
-                    <input id="profileConfirmPassword" class="profileEditor__input" type="password" minlength="6" placeholder="确认新密码" />
+                    <label class="profileEditor__label" for="profileNewPassword">パスワード変更</label>
+                    <input id="profileNewPassword" class="profileEditor__input" type="password" minlength="6" placeholder="新しいパスワード（6文字以上）" />
+                    <input id="profileConfirmPassword" class="profileEditor__input" type="password" minlength="6" placeholder="新しいパスワード（確認）" />
                   </div>
-                  <button id="profilePasswordBtn" class="btn btn--ghost btn--small" type="button">更新密码</button>
+                  <button id="profilePasswordBtn" class="btn btn--ghost btn--small" type="button">更新</button>
                   <div id="profilePasswordMsg" class="profileEditor__msg"></div>
                   <div id="profileSaveMsg" class="profileEditor__msg"></div>
                 </div>
@@ -82,18 +81,19 @@
             <div id="pickRight" class="view view--active">
               <div class="indexTopNav">
                 <div class="indexBrand">Mood Player</div>
-                <button id="hamburgerMenu" class="hamburgerMenu" type="button" aria-label="菜单">
+                <button id="hamburgerMenu" class="hamburgerMenu" type="button" aria-label="メニュー">
                   <span></span>
                   <span></span>
                   <span></span>
                 </button>
                 <div id="userMenu" class="userMenu userMenu--dropdown" aria-hidden="true">
-                  <button id="homeBtn" class="btn btn--ghost" type="button">首页</button>
-                  <button id="loginBtn" class="btn btn--ghost" type="button">登录</button>
+                  <button id="homeBtn" class="btn btn--ghost" type="button">ホーム</button>
+                  <button id="loginBtn" class="btn btn--ghost" type="button">ログイン</button>
                   <div id="userInfo" class="userInfo" style="display: none;">
-                    <button id="myPageBtn" class="btn btn--ghost" type="button">我的页面</button>
-                    <span id="userName" class="userName" style="cursor: pointer;" title="查看个人资料">👤</span>
-                    <button id="logoutBtn" class="btn btn--ghost btn--small" type="button">登出</button>
+                    <button id="myPageBtn" class="btn btn--ghost" type="button">マイページ</button>
+                    <button id="friendChatBtn" class="btn btn--ghost" type="button">友だちチャット</button>
+                    <span id="userName" class="userName" style="cursor: pointer;" title="プロフィールを見る">👤</span>
+                    <button id="logoutBtn" class="btn btn--ghost btn--small" type="button">ログアウト</button>
                   </div>
                 </div>
               </div>
@@ -104,22 +104,14 @@
               </div>
 
               <div class="indexSection">
-                <div class="indexSection__head">POPULAR</div>
+                <div class="indexSection__head">人気</div>
 
                 <div class="indexList" role="list">
                   <button class="moodCard indexRow" type="button" data-mood="relax" role="listitem">
                     <div class="indexRow__cover indexRow__cover--relax" aria-hidden="true"></div>
                     <div class="indexRow__meta">
                       <div class="indexRow__title">リラックス</div>
-                      <div class="indexRow__sub">chill / lofi</div>
-                    </div>
-                  </button>
-
-                  <button class="moodCard indexRow" type="button" data-mood="heartbreak" role="listitem">
-                    <div class="indexRow__cover indexRow__cover--heartbreak" aria-hidden="true"></div>
-                    <div class="indexRow__meta">
-                      <div class="indexRow__title">失恋</div>
-                      <div class="indexRow__sub">slow / r&b</div>
+                      <div class="indexRow__sub">チル / ローファイ</div>
                     </div>
                   </button>
 
@@ -127,7 +119,7 @@
                     <div class="indexRow__cover indexRow__cover--hype" aria-hidden="true"></div>
                     <div class="indexRow__meta">
                       <div class="indexRow__title">アガりたい</div>
-                      <div class="indexRow__sub">edm / trap</div>
+                      <div class="indexRow__sub">EDM / トラップ</div>
                     </div>
                   </button>
 
@@ -135,15 +127,7 @@
                     <div class="indexRow__cover indexRow__cover--quiet" aria-hidden="true"></div>
                     <div class="indexRow__meta">
                       <div class="indexRow__title">静かにしたい</div>
-                      <div class="indexRow__sub">piano / ambient</div>
-                    </div>
-                  </button>
-
-                  <button class="moodCard indexRow" type="button" data-mood="love" role="listitem">
-                    <div class="indexRow__cover indexRow__cover--love" aria-hidden="true"></div>
-                    <div class="indexRow__meta">
-                      <div class="indexRow__title">恋</div>
-                      <div class="indexRow__sub">city pop / ballad</div>
+                      <div class="indexRow__sub">ピアノ / アンビエント</div>
                     </div>
                   </button>
 
@@ -151,13 +135,9 @@
                     <div class="indexRow__cover indexRow__cover--fun" aria-hidden="true"></div>
                     <div class="indexRow__meta">
                       <div class="indexRow__title">楽し</div>
-                      <div class="indexRow__sub">pop / dance</div>
+                      <div class="indexRow__sub">ポップ / ダンス</div>
                     </div>
                   </button>
-                </div>
-                <div class="swipeHint" id="swipeHint">
-                  <span class="swipeHint__arrow">↓</span>
-                  <span class="swipeHint__text">スワイプしてさらに見る</span>
                 </div>
               </div>
             </div>
@@ -184,17 +164,42 @@
               </div>
 
               <div class="playerBar">
-                <button id="shuffleBtn" class="btn btn--icon" type="button" title="随机" aria-label="随机">🔀</button>
-                <button id="prevBtn" class="btn btn--icon" type="button" title="上一首" aria-label="上一首">⏮</button>
-                <button id="playBtn" class="btn btn--primary" type="button">▶ 再生</button>
-                <button id="nextBtn" class="btn btn--icon" type="button" title="下一首" aria-label="下一首">⏭</button>
-                <button id="repeatBtn" class="btn btn--icon" type="button" title="循环" aria-label="循环">🔁</button>
+                <button id="shuffleBtn" class="btn btn--icon" type="button" title="シャッフル" aria-label="シャッフル">
+                  <svg class="btn__iconSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5h-2V6.41l-3.29 3.3-1.42-1.42L17.59 5H16V3zM3 7h2.59l4.83 4.83-1.42 1.42L4.41 9H3V7zm14.59 8L15 17.59l1.41 1.41L19 16.41V18h2v-5h-5v2h1.59zM3 17v-2h2.59l9.7-9.71 1.42 1.42L6.41 17H3z"/></svg>
+                </button>
+                <button id="prevBtn" class="btn btn--icon" type="button" title="前の曲" aria-label="前の曲">
+                  <svg class="btn__iconSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.8 6v12L4.2 12l7.6-6zm8 0v12L12.2 12l7.6-6z"/></svg>
+                </button>
+                <button id="playBtn" class="btn btn--primary btn--withText" type="button" aria-label="再生">
+                  <span class="btn__iconWrap btn__iconWrap--play">
+                    <svg class="btn__iconSvg icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15L19 12 7 4.5z"/></svg>
+                    <svg class="btn__iconSvg icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zm6 0h4v14h-4z"/></svg>
+                  </span>
+                  <span class="btn__text">播放</span>
+                </button>
+                <button id="nextBtn" class="btn btn--icon" type="button" title="次の曲" aria-label="次の曲">
+                  <svg class="btn__iconSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.2 6v12l7.6-6-7.6-6zm-8 0v12l7.6-6-7.6-6z"/></svg>
+                </button>
+                <button id="repeatBtn" class="btn btn--icon" type="button" title="リピート" aria-label="リピート">
+                  <span class="btn__iconWrap btn__iconWrap--repeat">
+                    <svg class="btn__iconSvg icon-repeat" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10V4l4 4-4 4V9H7a3 3 0 0 0 0 6h1v2H7a5 5 0 0 1 0-10zm10 0h-1V5h1a5 5 0 0 1 0 10H7v3l-4-4 4-4v3h10a3 3 0 0 0 0-6z"/></svg>
+                    <svg class="btn__iconSvg icon-repeat-one" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10V4l4 4-4 4V9H7a3 3 0 0 0 0 6h1v2H7a5 5 0 0 1 0-10zm10 0h-1V5h1a5 5 0 0 1 0 10h-3v-2h3a3 3 0 0 0 0-6zM11 8h2v8h-2V8z"/></svg>
+                  </span>
+                </button>
                 <div class="volumeWrap">
-                  <button id="volumeMute" class="btn btn--icon" type="button" title="静音" aria-label="音量">🔊</button>
+                  <button id="volumeMute" class="btn btn--icon" type="button" title="ミュート" aria-label="音量">
+                    <span class="btn__iconWrap btn__iconWrap--volume">
+                      <svg class="btn__iconSvg icon-vol-high" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9v6h4l5 4V5L9 9H5zm11.5 3a3.5 3.5 0 0 0-2-3.15v6.3A3.5 3.5 0 0 0 16.5 12zm0-8a11 11 0 0 1 0 16l-1.41-1.41a9 9 0 0 0 0-13.18L16.5 4z"/></svg>
+                      <svg class="btn__iconSvg icon-vol-low" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9v6h4l5 4V5L9 9H5zm11.5 3a3.5 3.5 0 0 0-2-3.15v6.3A3.5 3.5 0 0 0 16.5 12z"/></svg>
+                      <svg class="btn__iconSvg icon-vol-mute" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9v6h4l5 4V5L9 9H5zm10.59 0L18 11.41 20.41 9 22 10.59 19.59 13 22 15.41 20.41 17 18 14.59 15.59 17 14 15.41 16.41 13 14 10.59 15.59 9z"/></svg>
+                    </span>
+                  </button>
                   <input id="volumeSlider" type="range" min="0" max="100" value="100" title="音量" aria-label="音量" />
                 </div>
-                <button id="chatBtn" class="btn btn--icon btn--chat" type="button" title="与同听这首歌的人聊天（需有人同时收听）" disabled>💬 Chat</button>
-                <button id="backBtn" class="btn btn--back" type="button" title="返回选心情">← 返回选心情</button>
+                <button id="chatBtn" class="btn btn--icon btn--chat btn--withText" type="button" title="同じ曲を聴いている人とチャット（2人以上）" disabled>
+                  <svg class="btn__iconSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v11H7l-3 3V4zm2 2v7.17L6.17 13H18V6H6z"/></svg>
+                  <span class="btn__text">チャット</span>
+                </button>
               </div>
 
               <div class="progress progress--wide" aria-label="再生状況">
@@ -209,57 +214,56 @@
 
               <div id="chatPanel" class="chatPanel" aria-hidden="true">
                 <div class="chatPanel__head">
-                  <span class="chatPanel__title">同听这首歌的人</span>
-                  <button id="chatLoadMore" class="btn btn--ghost btn--small" type="button">更早消息</button>
-                  <button id="chatClose" class="btn btn--icon" type="button" aria-label="关闭">✕</button>
+                  <span class="chatPanel__title">同じ曲を聴いている人</span>
+                  <button id="chatClose" class="btn btn--icon" type="button" aria-label="閉じる">✕</button>
                 </div>
                 <div id="chatMessages" class="chatPanel__messages" role="log"></div>
                 <div class="chatPanel__inputWrap">
-                  <input id="chatInput" type="text" placeholder="说点什么…" maxlength="500" autocomplete="off" />
-                  <button id="chatSend" class="btn btn--primary" type="button">发送</button>
+                  <input id="chatInput" type="text" placeholder="メッセージを入力…" maxlength="500" autocomplete="off" />
+                  <button id="chatSend" class="btn btn--primary" type="button">送信</button>
                 </div>
                 <div id="chatUserMenu" class="chatUserMenu" hidden style="display:none;">
-                  <button id="chatMenuAddFriend" class="chatUserMenu__item" type="button">新增好友</button>
-                  <button id="chatMenuViewProfile" class="chatUserMenu__item" type="button">查看资料</button>
+                  <button id="chatMenuAddFriend" class="chatUserMenu__item" type="button">友だち追加</button>
+                  <button id="chatMenuViewProfile" class="chatUserMenu__item" type="button">プロフィールを見る</button>
                 </div>
                 <div id="chatUserProfileCard" class="chatUserProfileCard" hidden style="display:none;">
-                  <button id="chatUserProfileClose" class="chatUserProfileCard__close" type="button" aria-label="关闭">✕</button>
+                  <button id="chatUserProfileClose" class="chatUserProfileCard__close" type="button" aria-label="閉じる">✕</button>
                   <div class="chatUserProfileCard__head">
                     <div id="chatUserProfileAvatar" class="listItem__icon">👤</div>
-                    <div id="chatUserProfileName" class="chatUserProfileCard__name">用户</div>
+                    <div id="chatUserProfileName" class="chatUserProfileCard__name">ユーザー</div>
                   </div>
-                  <div id="chatUserProfileBio" class="chatUserProfileCard__bio">这个用户还没有填写简介。</div>
+                  <div id="chatUserProfileBio" class="chatUserProfileCard__bio">このユーザーはまだ自己紹介を書いていません。</div>
                 </div>
               </div>
 
               <audio id="audio" preload="auto"></audio>
             </div>
 
-            <div id="userRight" class="view" aria-label="好友管理">
+            <div id="userRight" class="view" aria-label="友だち管理">
               <div class="listHead">
-                <div class="listHead__label">好友</div>
-                <div class="listHead__sub">添加和管理好友</div>
+                <div class="listHead__label">友だち</div>
+                <div class="listHead__sub">友だちの追加と管理</div>
               </div>
 
               <div class="friendSection">
                 <div class="friendSection__head">
-                  <input id="searchFriend" type="text" placeholder="搜索用户邮箱或用户名..." class="friendSearch" />
-                  <button id="searchFriendBtn" class="btn btn--primary btn--small" type="button">搜索</button>
+                  <input id="searchFriend" type="text" placeholder="メールまたはユーザー名で検索..." class="friendSearch" />
+                  <button id="searchFriendBtn" class="btn btn--primary btn--small" type="button">検索</button>
                 </div>
                 <div id="searchResults" class="friendSearchResults"></div>
               </div>
 
               <div class="friendSection">
                 <div class="listHead">
-                  <div class="listHead__label">好友请求</div>
-                  <div class="listHead__sub" id="requestCount">0 条待处理</div>
+                  <div class="listHead__label">友だち申請</div>
+                  <div class="listHead__sub" id="requestCount">0 件</div>
                 </div>
                 <div id="friendRequests" class="list"></div>
               </div>
 
               <div class="friendSection">
                 <div class="listHead">
-                  <div class="listHead__label">我的好友</div>
+                  <div class="listHead__label">友だち一覧</div>
                 </div>
                 <div id="friendsList" class="list"></div>
               </div>
@@ -281,27 +285,51 @@
       </footer>
     </main>
 
-    <!-- 登录/注册模态框 -->
+    <!-- ログイン/登録モーダル -->
     <div id="authModal" class="authModal" aria-hidden="true">
       <div class="authModal__backdrop"></div>
       <div class="authModal__content">
-        <button id="authClose" class="authModal__close" type="button" aria-label="关闭">✕</button>
+        <button id="authClose" class="authModal__close" type="button" aria-label="閉じる">✕</button>
         <div class="authModal__tabs">
-          <button id="authTabLogin" class="authModal__tab authModal__tab--active" type="button">登录</button>
-          <button id="authTabSignup" class="authModal__tab" type="button">注册</button>
+          <button id="authTabLogin" class="authModal__tab authModal__tab--active" type="button">ログイン</button>
+          <button id="authTabSignup" class="authModal__tab" type="button">新規登録</button>
         </div>
         <div id="authFormLogin" class="authModal__form">
-          <input id="loginEmail" type="email" placeholder="邮箱" autocomplete="email" />
-          <input id="loginPassword" type="password" placeholder="密码" autocomplete="current-password" />
-          <button id="loginSubmit" class="btn btn--primary" type="button">登录</button>
+          <input id="loginEmail" type="email" placeholder="メールアドレス" autocomplete="email" />
+          <input id="loginPassword" type="password" placeholder="パスワード" autocomplete="current-password" />
+          <button id="loginSubmit" class="btn btn--primary" type="button">ログイン</button>
           <div id="loginError" class="authModal__error"></div>
         </div>
         <div id="authFormSignup" class="authModal__form" style="display: none;">
-          <input id="signupEmail" type="email" placeholder="邮箱" autocomplete="email" />
-          <input id="signupPassword" type="password" placeholder="密码（至少6位）" autocomplete="new-password" />
-          <input id="signupName" type="text" placeholder="用户名" autocomplete="username" maxlength="20" />
-          <button id="signupSubmit" class="btn btn--primary" type="button">注册</button>
+          <input id="signupEmail" type="email" placeholder="メールアドレス" autocomplete="email" />
+          <input id="signupPassword" type="password" placeholder="パスワード（6文字以上）" autocomplete="new-password" />
+          <input id="signupName" type="text" placeholder="表示名" autocomplete="username" maxlength="20" />
+          <button id="signupSubmit" class="btn btn--primary" type="button">新規登録</button>
           <div id="signupError" class="authModal__error"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="friendChatModal" class="friendChatModal" aria-hidden="true">
+      <div class="friendChatModal__backdrop"></div>
+      <div class="friendChatModal__content">
+        <div class="friendChatModal__head">
+          <div class="friendChatModal__title">友だちチャット</div>
+          <button id="friendChatClose" class="btn btn--icon" type="button" aria-label="閉じる">✕</button>
+        </div>
+        <div class="friendChatModal__body">
+          <aside class="friendChatModal__friends">
+            <div class="friendChatModal__sub">友だち</div>
+            <div id="friendChatFriendsList" class="friendChatFriendsList"></div>
+          </aside>
+          <section class="friendChatModal__chat">
+            <div id="friendChatTargetName" class="friendChatModal__target">友だちを選んでチャットを開始</div>
+            <div id="friendChatMessages" class="friendChatMessages"></div>
+            <div class="friendChatInputWrap">
+              <input id="friendChatInput" type="text" placeholder="メッセージを入力..." maxlength="500" autocomplete="off" />
+              <button id="friendChatSend" class="btn btn--primary" type="button">送信</button>
+            </div>
+          </section>
         </div>
       </div>
     </div>
@@ -320,6 +348,6 @@
         measurementId: "G-5DT22MVRQD"
       };
     </script>
-    <script src="./script.js?v=20260308o"></script>
+    <script src="./script.js?v=20260308z"></script>
   </body>
 </html>

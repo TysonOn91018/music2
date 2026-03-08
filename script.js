@@ -15,45 +15,29 @@ const TRACK_URL = getAssetPath(TRACK_FILE);
 
 const MOODS = {
   relax: {
-    tag: "😌 放松",
-    copy: ["放轻松，先深呼吸一下。", "把肩膀放下来，今天也辛苦了。", "这首歌，送给需要休息的你。"],
+    tag: "😌 リラックス",
+    copy: ["肩の力を抜いて、深呼吸しよう。", "今日もおつかれさま。少し休もう。", "休みたいあなたに、この一曲を。"],
     particles: { speed: 0.35, drift: 0.25, size: [1.2, 3.2], count: 56 },
     tracks: [{ title: "夜に溶けるまま", url: getAssetPath(TRACK_FILE) }],
   },
-  heartbreak: {
-    tag: "💔 失恋",
-    copy: ["没关系，先难过一会儿也可以。", "我懂，你不需要解释。", "听完这首，再决定要不要原谅今天。"],
-    particles: { speed: 0.55, drift: 0.18, size: [1.0, 2.6], count: 70 },
-    tracks: [{ title: "夜に溶けるまま", url: getAssetPath(TRACK_FILE) }],
-  },
   hype: {
-    tag: "🔥 想燃起来",
-    copy: ["把音量调大一点。", "今天就该是主角。", "让心跳替你倒数：3，2，1。"],
+    tag: "🔥 ハイプ",
+    copy: ["音量を少し上げよう。", "今日はあなたが主役。", "鼓動のカウントでいこう、3・2・1。"],
     particles: { speed: 1.25, drift: 0.42, size: [1.4, 4.2], count: 92 },
     tracks: [{ title: "夜に溶けるまま", url: getAssetPath(TRACK_FILE) }],
   },
   quiet: {
-    tag: "🌧 想安静一下",
-    copy: ["安静也很好，世界可以先慢一点。", "就让这一首，陪你走一段路。", "不用说话，音乐会懂。"],
+    tag: "🌧 静か",
+    copy: ["静かな時間も悪くない。", "この一曲が、そっと寄り添う。", "言葉はいらない、音楽がわかってくれる。"],
     particles: { speed: 0.45, drift: 0.14, size: [1.0, 2.8], count: 64 },
-    tracks: [{ title: "夜に溶けるまま", url: getAssetPath(TRACK_FILE) }],
-  },
-  love: {
-    tag: "💗 恋",
-    copy: [
-      "想到那个人的时候，心里会不会有点甜？",
-      "喜欢一个人，就是总想多看一眼。",
-      "这首歌，算是小小的告白练习。"
-    ],
-    particles: { speed: 0.55, drift: 0.24, size: [1.2, 3.0], count: 70 },
     tracks: [{ title: "夜に溶けるまま", url: getAssetPath(TRACK_FILE) }],
   },
   fun: {
     tag: "🎉 楽し",
     copy: [
-      "今天就先别酷了，开心最重要。",
-      "跟喜欢的人一起笑一笑，比什么都治愈。",
-      "这首歌适合边点头边乱跳。"
+      "今日はクールより、楽しさ優先。",
+      "好きな人と笑う時間がいちばん効く。",
+      "この曲は、ノって跳ねるためにある。"
     ],
     particles: { speed: 0.9, drift: 0.36, size: [1.4, 3.6], count: 88 },
     tracks: [{ title: "夜に溶けるまま", url: getAssetPath(TRACK_FILE) }],
@@ -62,9 +46,9 @@ const MOODS = {
 
 const STORAGE_KEY = "mood-player:lastMood";
 
-/* Firebase 配置（用于登录系统）。聊天/好友模块仍是旧 Supabase 逻辑，暂未迁移。 */
+/* Firebase 配置（用于登录系统）。チャット/友だち模块仍是旧 Supabase 逻辑，暂未迁移。 */
 const FIREBASE_CONFIG = window.MOOD_PLAYER_FIREBASE || {};
-/* 保留旧常量，确保未迁移的 Supabase 聊天/好友代码继续安全降级为不可用状态。 */
+/* 保留旧常量，确保未迁移的 Supabase チャット/友だち代码继续安全降级为不可用状态。 */
 const SUPABASE_CONFIG = { url: "", anonKey: "" };
 let firebaseApp = null;
 let firebaseAuth = null;
@@ -131,6 +115,7 @@ const els = {
   userMenu: document.getElementById("userMenu"),
   homeBtn: document.getElementById("homeBtn"),
   myPageBtn: document.getElementById("myPageBtn"),
+  friendChatBtn: document.getElementById("friendChatBtn"),
   backToHomeBtn: document.getElementById("backToHomeBtn"),
   authModal: document.getElementById("authModal"),
   authClose: document.getElementById("authClose"),
@@ -171,6 +156,13 @@ const els = {
   friendRequests: document.getElementById("friendRequests"),
   requestCount: document.getElementById("requestCount"),
   friendsList: document.getElementById("friendsList"),
+  friendChatModal: document.getElementById("friendChatModal"),
+  friendChatClose: document.getElementById("friendChatClose"),
+  friendChatFriendsList: document.getElementById("friendChatFriendsList"),
+  friendChatTargetName: document.getElementById("friendChatTargetName"),
+  friendChatMessages: document.getElementById("friendChatMessages"),
+  friendChatInput: document.getElementById("friendChatInput"),
+  friendChatSend: document.getElementById("friendChatSend"),
 };
 
 let state = {
@@ -184,6 +176,7 @@ let state = {
   chatRoomId: null,
   user: null,
   friends: [],
+  friendUsers: [],
   friendRequests: [],
   profile: null,
 };
@@ -238,6 +231,16 @@ function showUserPage() {
   loadFriendRequests();
 }
 
+function mountTopNavEveryPage() {
+  const rightPanel = document.querySelector(".deck__right");
+  const topNav = document.querySelector(".indexTopNav");
+  if (!rightPanel || !topNav) return;
+  if (topNav.parentElement !== rightPanel) {
+    rightPanel.insertBefore(topNav, rightPanel.firstChild);
+  }
+  rightPanel.classList.add("deck__right--hasGlobalNav");
+}
+
 /* ---------------------------
  * 业务：选心情 & 点歌
  * --------------------------- */
@@ -251,10 +254,10 @@ function setMood(moodKey, { autoplay = true, pushUrl = true, burst = true, burst
 
   els.moodTag.textContent = MOODS[moodKey].tag;
   els.moodCopy.textContent = pickRandom(MOODS[moodKey].copy);
-  if (els.playlistSub) els.playlistSub.textContent = `Mood: ${MOODS[moodKey].tag}`;
-  if (els.leftPill) els.leftPill.textContent = "Now playing";
-  if (els.detailArtist) els.detailArtist.textContent = "Mood Player";
-  if (els.detailAlbum) els.detailAlbum.textContent = `Album: ${moodKey.toUpperCase()} Session`;
+  if (els.playlistSub) els.playlistSub.textContent = `気分: ${MOODS[moodKey].tag}`;
+  if (els.leftPill) els.leftPill.textContent = "再生中";
+  if (els.detailArtist) els.detailArtist.textContent = "気分プレーヤー";
+  if (els.detailAlbum) els.detailAlbum.textContent = `アルバム: ${moodKey.toUpperCase()} セッション`;
 
   if (pushUrl) setUrlMood(moodKey);
   bgFX.setPreset(moodKey);
@@ -376,7 +379,7 @@ function loadTrack(track, { autoplay = true, fadeIn = false } = {}) {
   try {
     chatLeaveRoom();
   } catch (_) {}
-  els.trackTitle.textContent = track.title;
+  els.trackTitle.textContent = normalizeTrackTitle(track.title);
   els.audio.src = track.url || "";
   els.audio.currentTime = 0;
   if (els.progressInner) els.progressInner.style.width = "0%";
@@ -423,7 +426,24 @@ function togglePlay() {
 }
 
 function setPlayBtn(isPlaying) {
-  els.playBtn.textContent = isPlaying ? "⏸ 暂停" : "▶ 播放";
+  if (!els.playBtn) return;
+  els.playBtn.classList.toggle("is-playing", Boolean(isPlaying));
+  const label = isPlaying ? "暂停" : "播放";
+  const textEl = els.playBtn.querySelector(".btn__text");
+  if (textEl) textEl.textContent = "";
+  els.playBtn.setAttribute("aria-label", label);
+}
+
+function updateVolumeButtonIcon(volume) {
+  if (!els.volumeMute) return;
+  const v = Number(volume);
+  const level = v <= 0 ? "mute" : v < 0.5 ? "low" : "high";
+  els.volumeMute.setAttribute("data-volume-level", level);
+}
+
+function updateRepeatButtonIcon(mode) {
+  if (!els.repeatBtn) return;
+  els.repeatBtn.setAttribute("data-repeat-mode", mode === "one" ? "one" : "all");
 }
 
 /* ---------------------------
@@ -454,7 +474,7 @@ async function copyShareLink() {
     await navigator.clipboard.writeText(text);
     toast("已复制链接");
   } catch {
-    // 回退：prompt 让用户手动复制
+    // 回退：prompt 让ユーザー手动复制
     window.prompt("复制这个链接：", text);
   }
 }
@@ -623,34 +643,50 @@ function parseTrackTitle(url, index) {
   try {
     const raw = decodeURIComponent(String(url).split("/").pop()?.split("?")[0] || "");
     const base = raw.replace(/\.mp3$/i, "").replaceAll("_", " ").trim();
-    return base || `Track ${index + 1}`;
+    return normalizeTrackTitle(base || `Track ${index + 1}`);
   } catch (_) {
-    return `Track ${index + 1}`;
+    return normalizeTrackTitle(`Track ${index + 1}`);
   }
 }
 
+function normalizeTrackTitle(title) {
+  const t = String(title || "").trim();
+  if (!t) return "";
+  return t.replace(/^(title|タイトル)\s*[:：-]?\s*/i, "").trim();
+}
+
 async function loadTracksFromTxt() {
-  try {
-    const res = await fetch(getAssetPath("chill.txt"), { cache: "no-store" });
-    if (!res.ok) return;
-    const text = await res.text();
-    const urls = text
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => /^https?:\/\//i.test(line) && /\.mp3(\?|$)/i.test(line));
-    if (!urls.length) return;
+  const moodTxtMap = {
+    relax: "chill.txt",
+    hype: "EDM.txt",
+    quiet: "slow.txt",
+    fun: "happy.txt",
+  };
 
-    const tracks = urls.map((url, i) => ({
-      title: parseTrackTitle(url, i),
-      url,
-    }));
+  const loadOneMood = async (moodKey, filename) => {
+    try {
+      const res = await fetch(getAssetPath(filename), { cache: "no-store" });
+      if (!res.ok) return;
+      const text = await res.text();
+      const urls = text
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => /^https?:\/\//i.test(line) && /\.mp3(\?|$)/i.test(line));
+      if (!urls.length) return;
+      MOODS[moodKey].tracks = urls.map((url, i) => ({
+        title: parseTrackTitle(url, i),
+        url,
+      }));
+    } catch (e) {
+      console.warn(`${filename} の読み込みに失敗、${moodKey} は既定音源を使用:`, e);
+    }
+  };
 
-    Object.keys(MOODS).forEach((key) => {
-      MOODS[key].tracks = tracks;
-    });
-  } catch (e) {
-    console.warn("加载 chill.txt 失败，回退到默认音频:", e);
-  }
+  await Promise.all(
+    Object.entries(moodTxtMap)
+      .filter(([moodKey]) => Boolean(MOODS[moodKey]))
+      .map(([moodKey, filename]) => loadOneMood(moodKey, filename))
+  );
 }
 
 function fadeAudio(audioEl, from, to, ms) {
@@ -734,20 +770,18 @@ function bind() {
   els.volumeSlider?.addEventListener("input", () => {
     const v = Number(els.volumeSlider.value) / 100;
     els.audio.volume = v;
-    if (els.volumeMute) {
-      els.volumeMute.textContent = v === 0 ? "🔇" : v < 0.5 ? "🔉" : "🔊";
-    }
+    updateVolumeButtonIcon(v);
   });
   els.volumeMute?.addEventListener("click", () => {
     if (els.audio.volume > 0) {
       state.volumeBeforeMute = els.audio.volume;
       els.audio.volume = 0;
       els.volumeSlider.value = 0;
-      els.volumeMute.textContent = "🔇";
+      updateVolumeButtonIcon(0);
     } else {
       els.audio.volume = state.volumeBeforeMute;
       els.volumeSlider.value = Math.round(state.volumeBeforeMute * 100);
-      els.volumeMute.textContent = state.volumeBeforeMute < 0.5 ? "🔉" : "🔊";
+      updateVolumeButtonIcon(state.volumeBeforeMute);
     }
   });
 
@@ -756,8 +790,8 @@ function bind() {
     const modes = ["off", "one", "all"];
     const i = modes.indexOf(state.repeatMode);
     state.repeatMode = modes[(i + 1) % modes.length];
-    els.repeatBtn.textContent = state.repeatMode === "off" ? "🔁" : state.repeatMode === "one" ? "🔂" : "🔁";
-    els.repeatBtn.title = state.repeatMode === "off" ? "循环关闭" : state.repeatMode === "one" ? "单曲循环" : "列表循环";
+    updateRepeatButtonIcon(state.repeatMode);
+    els.repeatBtn.title = state.repeatMode === "off" ? "リピートオフ" : state.repeatMode === "one" ? "1曲リピート" : "全曲リピート";
   });
 
   // 随机
@@ -805,7 +839,7 @@ function bind() {
     e.stopPropagation();
     const userId = chatUserMenuTarget.userId;
     if (!userId) {
-      toast("无法添加：缺少用户ID");
+      toast("无法添加：缺少ユーザーID");
       return;
     }
     const myId = getCurrentUserId();
@@ -870,7 +904,7 @@ function bind() {
     if (els.userMenu) els.userMenu.setAttribute("aria-hidden", "true");
   });
   
-  // 返回首页按钮（在用户页面）
+  // 返回首页按钮（在ユーザー页面）
   els.backToHomeBtn?.addEventListener("click", () => {
     resetToPick();
   });
@@ -886,6 +920,16 @@ function bind() {
     if (els.hamburgerMenu) els.hamburgerMenu.classList.remove("active");
     if (els.userMenu) els.userMenu.setAttribute("aria-hidden", "true");
   });
+  els.friendChatBtn?.addEventListener("click", async () => {
+    if (!state.user) {
+      openAuthModal("login");
+      return;
+    }
+    // 关闭菜单
+    if (els.hamburgerMenu) els.hamburgerMenu.classList.remove("active");
+    if (els.userMenu) els.userMenu.setAttribute("aria-hidden", "true");
+    await openFriendChatModal();
+  });
   
   els.authClose?.addEventListener("click", closeAuthModal);
   els.authModal?.addEventListener("click", (e) => {
@@ -899,7 +943,7 @@ function bind() {
     const email = els.loginEmail?.value?.trim();
     const password = els.loginPassword?.value;
     if (!email || !password) {
-      if (els.loginError) els.loginError.textContent = "请填写邮箱和密码";
+      if (els.loginError) els.loginError.textContent = "メールアドレスとパスワードを入力してください";
       return;
     }
     await signIn(email, password);
@@ -909,11 +953,11 @@ function bind() {
     const password = els.signupPassword?.value;
     const name = els.signupName?.value?.trim();
     if (!email || !password) {
-      if (els.signupError) els.signupError.textContent = "请填写邮箱和密码";
+      if (els.signupError) els.signupError.textContent = "メールアドレスとパスワードを入力してください";
       return;
     }
     if (password.length < 6) {
-      if (els.signupError) els.signupError.textContent = "密码至少6位";
+      if (els.signupError) els.signupError.textContent = "パスワードは6文字以上です";
       return;
     }
     await signUp(email, password, name);
@@ -925,7 +969,7 @@ function bind() {
     if (e.key === "Enter") els.signupSubmit?.click();
   });
 
-  // 用户页面
+  // ユーザー页面
   els.userName?.addEventListener("click", showUserPage);
   els.profileSaveBtn?.addEventListener("click", saveUserProfile);
   els.profilePasswordBtn?.addEventListener("click", changeUserPassword);
@@ -937,7 +981,7 @@ function bind() {
       return;
     }
     renderProfileAvatar(url);
-    setProfileSaveMessage("已预览头像，记得点击保存");
+    setProfileSaveMessage("アイコンをプレビューしました。保存してください");
   });
   els.chatLoadMore?.addEventListener("click", () => {
     chatLoadMessages({ appendOlder: true });
@@ -950,6 +994,19 @@ function bind() {
     if (e.key === "Enter") {
       const q = els.searchFriend?.value?.trim();
       await renderSearchResults(q);
+    }
+  });
+  els.friendChatClose?.addEventListener("click", closeFriendChatModal);
+  els.friendChatModal?.addEventListener("click", (e) => {
+    if (e.target.classList.contains("friendChatModal") || e.target.classList.contains("friendChatModal__backdrop")) {
+      closeFriendChatModal();
+    }
+  });
+  els.friendChatSend?.addEventListener("click", sendFriendChatMessage);
+  els.friendChatInput?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendFriendChatMessage();
     }
   });
 
@@ -992,7 +1049,7 @@ function bind() {
   });
   els.audio.addEventListener("error", () => {
     setPlayBtn(false);
-    toast("无法播放音频，请确认 music 文件夹内有 MP3 并用本地服务器打开（如 npx serve .）");
+    toast("音声を再生できません。music フォルダに MP3 があり、ローカルサーバーで開いているか確認してください（例: npx serve .）");
   });
 
   window.addEventListener("keydown", (e) => {
@@ -1045,11 +1102,11 @@ function resetToPick() {
   if (els.leftPill) els.leftPill.textContent = "Select mood";
   chatLeaveRoom();
   closeChatPanel();
-  toast("已返回选择心情");
+  toast("気分選択に戻りました");
 }
 
 /* ---------------------------
- * 同听聊天：只有与正在听同一首歌的人才能打开聊天
+ * 同听チャット：只有与正在听同一首歌的人才能打开チャット
  * 依赖 Supabase（Presence + 表 chat_messages）
  *
  * Supabase 建表 SQL（在 SQL Editor 中执行）：
@@ -1062,7 +1119,7 @@ function resetToPick() {
  *     created_at timestamptz default now()
  *   );
  *   alter publication supabase_realtime add table chat_messages;
- * 然后在 index.html 前加：<script>window.MOOD_PLAYER_SUPABASE={url:'你的项目URL',anonKey:'你的anon key'};</script>
+ * 然后在 index.html 前加：<script>window.MOOD_PLAYER_SUPABASE={url:'あなた的项目URL',anonKey:'あなた的anon key'};</script>
  * --------------------------- */
 let chatMessagesUnsub = null;
 let chatPresenceUnsub = null;
@@ -1079,6 +1136,9 @@ let chatMessageSweepTimer = 0;
 let chatUserMenuTarget = { userId: "", userName: "" };
 let chatPanelOpenedAt = 0;
 let chatUserMenuOpenedAt = 0;
+let friendChatUnsub = null;
+let currentFriendChatId = "";
+let currentFriendTarget = null;
 
 function getRoomId() {
   if (!state.mood || !state.currentTrack?.url) return null;
@@ -1190,22 +1250,22 @@ function chatJoinRoom() {
   chatLeaveRoom();
   const roomId = getRoomId();
   if (!roomId) {
-    updateChatButton(false, "未选择曲目");
+    updateChatButton(false, "曲が未選択です");
     return;
   }
   const fb = getFirebase();
   if (!fb) {
-    updateChatButton(false, "请先配置 Firebase 后再使用聊天");
+    updateChatButton(false, "Firebase を設定してからチャットを利用してください");
     return;
   }
 
   state.chatRoomId = roomId;
   state.canChat = false;
-  updateChatButton(false, "正在检测同听人数...");
+  updateChatButton(false, "同時視聴人数を確認中...");
   const roomHash = getRoomIdHash(roomId);
   const presenceRef = getRoomPresenceRef(roomHash);
   if (!presenceRef) {
-    updateChatButton(false, "Firebase 聊天初始化失败");
+    updateChatButton(false, "Firebase チャットの初期化に失敗しました");
     return;
   }
 
@@ -1248,13 +1308,13 @@ function chatJoinRoom() {
       state.canChat = activeCount >= 2 && hasOtherUser;
       updateChatButton(
         state.canChat,
-        state.canChat ? `当前房间 ${activeCount} 人在线，可聊天` : `当前房间 ${activeCount} 人在线，需至少 2 人（含其他用户）`
+        state.canChat ? `このルームは ${activeCount} 人オンライン。チャット可能です` : `このルームは ${activeCount} 人オンライン。2人以上（他ユーザー含む）が必要です`
       );
     },
     (error) => {
       console.warn("chat presence subscribe error:", error);
       state.canChat = false;
-      updateChatButton(false, "聊天在线状态同步失败");
+      updateChatButton(false, "チャットのオンライン状態同期に失敗しました");
     }
   );
 }
@@ -1287,11 +1347,10 @@ function chatLeaveRoom() {
 function updateChatButton(canOpen, tooltip) {
   if (!els.chatBtn) return;
   els.chatBtn.disabled = !canOpen;
-  const defaultMsg = canOpen ? "与同听这首歌的人聊天" : "暂无其他人同时收听此曲，无法打开聊天";
+  const defaultMsg = canOpen ? "同じ曲を聴いている人とチャット" : "他の同時視聴ユーザーがいないためチャットできません";
   els.chatBtn.title = tooltip || defaultMsg;
-  if (els.chatBtn.textContent.includes("Chat")) {
-    els.chatBtn.textContent = canOpen ? "💬 Chat" : "💬 Chat (需2人)";
-  }
+  const textEl = els.chatBtn.querySelector(".btn__text");
+  if (textEl) textEl.textContent = canOpen ? "チャット" : "チャット (2人必要)";
 }
 
 function renderChatRows(rows) {
@@ -1363,7 +1422,7 @@ async function chatLoadMessages({ appendOlder = false } = {}) {
     chatLoadingMore = true;
     if (els.chatLoadMore) {
       els.chatLoadMore.disabled = true;
-      els.chatLoadMore.textContent = "加载中...";
+      els.chatLoadMore.textContent = "読み込み中...";
     }
     let query = messagesRef.orderBy("created_at", "desc").limit(CHAT_PAGE_SIZE);
     if (appendOlder && chatOldestDoc) {
@@ -1400,8 +1459,8 @@ async function chatLoadMessages({ appendOlder = false } = {}) {
     if (!appendOlder) {
       els.chatMessages.innerHTML =
         `<div class="chatMsg">` +
-        `<div class="chatMsg__meta">加载失败</div>` +
-        `<div class="chatMsg__text">${escapeHtml(String(e?.message || e || "未知错误"))}</div>` +
+        `<div class="chatMsg__meta">読み込み失敗</div>` +
+        `<div class="chatMsg__text">${escapeHtml(String(e?.message || e || "不明なエラー"))}</div>` +
         `</div>`;
     }
   } finally {
@@ -1472,12 +1531,12 @@ async function openChatPanel() {
   const { activeCount, hasOtherUser } = await getActivePresenceStats(roomHash);
   if (activeCount < 2 || !hasOtherUser) {
     state.canChat = false;
-    updateChatButton(false, `当前房间 ${activeCount} 人在线，需至少 2 人（含其他用户）`);
-    toast("需要至少 2 人同听（且有其他用户）才能聊天");
+    updateChatButton(false, `このルームは ${activeCount} 人オンライン。2人以上（他ユーザー含む）が必要です`);
+    toast("需要至少 2 人同听（且有其他ユーザー）才能チャット");
     return;
   }
   state.canChat = true;
-  updateChatButton(true, `当前房间 ${activeCount} 人在线，可聊天`);
+  updateChatButton(true, `このルームは ${activeCount} 人オンライン。チャット可能です`);
   els.chatPanel.classList.add("chatPanel--open");
   els.chatPanel.setAttribute("aria-hidden", "false");
   chatPanelOpenedAt = Date.now();
@@ -1513,7 +1572,7 @@ function renderTrackList() {
   els.trackList.innerHTML = tracks
     .map((t, i) => {
       const idx = String(i + 1).padStart(2, "0");
-      const safeTitle = escapeHtml(t.title);
+      const safeTitle = escapeHtml(normalizeTrackTitle(t.title));
       return `
         <button class="listItem trackItem" type="button" data-track-index="${i}" role="listitem">
           <div class="listItem__idx">${idx}</div>
@@ -1630,7 +1689,7 @@ function openChatUserMenu({ userId, userName, x, y }) {
   const targetId = String(userId || "").trim();
   chatUserMenuTarget = {
     userId: targetId,
-    userName: String(userName || "用户"),
+    userName: String(userName || "ユーザー"),
   };
   updateChatAddFriendActionState().catch(() => {});
   els.chatUserMenu.hidden = false;
@@ -1649,20 +1708,20 @@ async function updateChatAddFriendActionState() {
   const myId = getCurrentUserId();
   if (!targetId || !myId || targetId === myId) {
     els.chatMenuAddFriend.disabled = true;
-    els.chatMenuAddFriend.textContent = targetId === myId ? "新增好友（你自己）" : "新增好友（不可用）";
+    els.chatMenuAddFriend.textContent = targetId === myId ? "友だち追加（自分）" : "友だち追加（利用不可）";
     return;
   }
   const fb = getFirebase();
   if (!fb) {
     els.chatMenuAddFriend.disabled = true;
-    els.chatMenuAddFriend.textContent = "新增好友（不可用）";
+    els.chatMenuAddFriend.textContent = "友だち追加（利用不可）";
     return;
   }
   try {
     const friendDoc = await fb.db.collection("friends").doc(`${myId}_${targetId}`).get();
     if (friendDoc.exists) {
       els.chatMenuAddFriend.disabled = true;
-      els.chatMenuAddFriend.textContent = "已是好友";
+      els.chatMenuAddFriend.textContent = "すでに友だちです";
       return;
     }
     const pending = await fb.db
@@ -1674,14 +1733,14 @@ async function updateChatAddFriendActionState() {
       .get();
     if (!pending.empty) {
       els.chatMenuAddFriend.disabled = true;
-      els.chatMenuAddFriend.textContent = "已发送请求";
+      els.chatMenuAddFriend.textContent = "申請送信済み";
       return;
     }
     els.chatMenuAddFriend.disabled = false;
-    els.chatMenuAddFriend.textContent = "新增好友";
+    els.chatMenuAddFriend.textContent = "友だち追加";
   } catch (_) {
     els.chatMenuAddFriend.disabled = true;
-    els.chatMenuAddFriend.textContent = "新增好友（不可用）";
+    els.chatMenuAddFriend.textContent = "友だち追加（利用不可）";
   }
 }
 
@@ -1691,7 +1750,7 @@ function closeChatUserMenu() {
   els.chatUserMenu.style.display = "none";
   if (els.chatMenuAddFriend) {
     els.chatMenuAddFriend.disabled = false;
-    els.chatMenuAddFriend.textContent = "新增好友";
+    els.chatMenuAddFriend.textContent = "友だち追加";
   }
 }
 
@@ -1720,8 +1779,8 @@ async function openChatUserProfileCard(userId, fallbackName) {
       console.warn("load chat user profile by name failed:", error);
     }
   }
-  const name = user?.name || fallbackName || "用户";
-  const bio = String(user?.bio || "").trim() || "这个用户还没有填写简介。";
+  const name = user?.name || fallbackName || "ユーザー";
+  const bio = String(user?.bio || "").trim() || "このユーザーはまだ自己紹介を書いていません。";
   const avatar = String(user?.avatar_url || "").trim();
   if (els.chatUserProfileName) els.chatUserProfileName.textContent = name;
   if (els.chatUserProfileBio) els.chatUserProfileBio.textContent = bio;
@@ -1787,7 +1846,7 @@ async function checkAuthSession() {
 async function ensureUserRecord(user) {
   const fb = getFirebase();
   if (!fb || !user?.uid) return;
-  const name = user.displayName || user.user_metadata?.name || user.email?.split("@")[0] || "用户";
+  const name = user.displayName || user.user_metadata?.name || user.email?.split("@")[0] || "ユーザー";
   try {
     const basePayload = {
       id: user.uid,
@@ -1803,14 +1862,14 @@ async function ensureUserRecord(user) {
       { merge: true }
     );
   } catch (error) {
-    console.error("创建用户记录失败:", error);
+    console.error("创建ユーザー记录失败:", error);
   }
 }
 
 async function signUp(email, password, name) {
   const fb = getFirebase();
   if (!fb) {
-    toast("Firebase 未配置");
+    toast("Firebase 未設定");
     return false;
   }
   try {
@@ -1824,11 +1883,11 @@ async function signUp(email, password, name) {
       displayName: credential?.user?.displayName || userName,
     });
     if (els.signupError) els.signupError.textContent = "";
-    toast("注册成功");
+    toast("登録しました");
     closeAuthModal();
     return true;
   } catch (error) {
-    if (els.signupError) els.signupError.textContent = error?.message || "注册失败";
+    if (els.signupError) els.signupError.textContent = error?.message || "登録失敗";
     return false;
   }
 }
@@ -1836,7 +1895,7 @@ async function signUp(email, password, name) {
 async function signIn(email, password) {
   const fb = getFirebase();
   if (!fb) {
-    toast("Firebase 未配置");
+    toast("Firebase 未設定");
     return false;
   }
   try {
@@ -1846,11 +1905,11 @@ async function signIn(email, password) {
     updateUserUI(true);
     await ensureUserRecord(credential.user);
     if (els.loginError) els.loginError.textContent = "";
-    toast("登录成功");
+    toast("ログインしました");
     closeAuthModal();
     return true;
   } catch (error) {
-    if (els.loginError) els.loginError.textContent = error?.message || "登录失败";
+    if (els.loginError) els.loginError.textContent = error?.message || "ログイン失敗";
     return false;
   }
 }
@@ -1860,10 +1919,11 @@ async function signOut() {
   if (fb) {
     await fb.auth.signOut();
   }
+  closeFriendChatModal();
   state.user = null;
   updateUserUI(false);
   chatLeaveRoom();
-  toast("已登出");
+  toast("ログアウトしました");
 }
 
 function updateUserUI(isLoggedIn) {
@@ -1871,15 +1931,17 @@ function updateUserUI(isLoggedIn) {
   if (isLoggedIn) {
     els.loginBtn.style.display = "none";
     els.userInfo.style.display = "flex";
-    const name = state.user?.displayName || state.user?.user_metadata?.name || state.user?.email?.split("@")[0] || "用户";
+    const name = state.user?.displayName || state.user?.user_metadata?.name || state.user?.email?.split("@")[0] || "ユーザー";
     els.userName.textContent = name;
     // 显示我的页面按钮
     if (els.myPageBtn) els.myPageBtn.style.display = "block";
+    if (els.friendChatBtn) els.friendChatBtn.style.display = "block";
   } else {
     els.loginBtn.style.display = "block";
     els.userInfo.style.display = "none";
     // 隐藏我的页面按钮
     if (els.myPageBtn) els.myPageBtn.style.display = "none";
+    if (els.friendChatBtn) els.friendChatBtn.style.display = "none";
   }
 }
 
@@ -1913,14 +1975,14 @@ async function loadUserProfile() {
   const uid = getCurrentUserId();
   if (!fb || !uid) return;
 
-  const fallbackName = state.user?.displayName || state.user?.email?.split("@")[0] || "用户";
+  const fallbackName = state.user?.displayName || state.user?.email?.split("@")[0] || "ユーザー";
   const fallbackEmail = state.user?.email || "—";
   try {
     const doc = await fb.db.collection("users").doc(uid).get();
     const data = doc.exists ? doc.data() : null;
     const name = data?.name || fallbackName;
     const email = data?.email || fallbackEmail;
-    const bio = data?.bio || "这个人很神秘，还没有填写简介。";
+    const bio = data?.bio || "まだ自己紹介がありません。";
     const avatarUrl = data?.avatar_url || state.user?.photoURL || "";
 
     state.profile = { ...(data || {}), name, email, bio, avatar_url: avatarUrl };
@@ -1932,13 +1994,13 @@ async function loadUserProfile() {
     if (els.profileAvatarUrl) els.profileAvatarUrl.value = avatarUrl || "";
     renderProfileAvatar(avatarUrl);
 
-    // 导航栏用户名也同步为 Firestore 昵称
+    // 导航栏ユーザー名也同步为 Firestore 昵称
     if (els.userName) els.userName.textContent = name;
   } catch (error) {
     console.warn("load user profile failed:", error);
     if (els.profileName) els.profileName.textContent = fallbackName;
     if (els.userEmail) els.userEmail.textContent = fallbackEmail;
-    if (els.profileBioText) els.profileBioText.textContent = "读取个人资料失败";
+    if (els.profileBioText) els.profileBioText.textContent = "プロフィールの読み込みに失敗しました";
     renderProfileAvatar(state.user?.photoURL || "");
   }
 }
@@ -1947,7 +2009,7 @@ async function saveUserProfile() {
   const fb = getFirebase();
   const uid = getCurrentUserId();
   if (!fb || !uid) {
-    setProfileSaveMessage("请先登录", true);
+    setProfileSaveMessage("先にログインしてください", true);
     return;
   }
 
@@ -1955,12 +2017,12 @@ async function saveUserProfile() {
   const bio = String(els.profileEditBio?.value || "").trim();
   const avatarInput = String(els.profileAvatarUrl?.value || "").trim();
   if (!name) {
-    setProfileSaveMessage("昵称不能为空", true);
+    setProfileSaveMessage("表示名は必須です", true);
     return;
   }
 
   if (avatarInput && !/^https?:\/\/.+/i.test(avatarInput)) {
-    setProfileSaveMessage("头像 URL 格式不正确", true);
+    setProfileSaveMessage("アイコン URL の形式が正しくありません", true);
     return;
   }
 
@@ -1994,14 +2056,14 @@ async function saveUserProfile() {
       avatar_url: avatarUrl,
     };
     if (els.profileName) els.profileName.textContent = name;
-    if (els.profileBioText) els.profileBioText.textContent = bio || "这个人很神秘，还没有填写简介。";
+    if (els.profileBioText) els.profileBioText.textContent = bio || "まだ自己紹介がありません。";
     if (els.userName) els.userName.textContent = name;
     renderProfileAvatar(avatarUrl);
-    setProfileSaveMessage("保存成功");
-    toast("个人资料已更新");
+    setProfileSaveMessage("保存しました");
+    toast("プロフィールを更新しました");
   } catch (error) {
     console.error("save profile failed:", error);
-    setProfileSaveMessage(error?.message || "保存失败", true);
+    setProfileSaveMessage(error?.message || "保存に失敗しました", true);
   }
 }
 
@@ -2009,17 +2071,17 @@ async function changeUserPassword() {
   const fb = getFirebase();
   const user = fb?.auth?.currentUser;
   if (!user) {
-    setProfilePasswordMessage("请先登录", true);
+    setProfilePasswordMessage("先にログインしてください", true);
     return;
   }
   const password = String(els.profileNewPassword?.value || "");
   const confirm = String(els.profileConfirmPassword?.value || "");
   if (password.length < 6) {
-    setProfilePasswordMessage("密码至少 6 位", true);
+    setProfilePasswordMessage("パスワードは 6 文字以上です", true);
     return;
   }
   if (password !== confirm) {
-    setProfilePasswordMessage("两次输入的密码不一致", true);
+    setProfilePasswordMessage("パスワードが一致しません", true);
     return;
   }
   try {
@@ -2027,20 +2089,20 @@ async function changeUserPassword() {
     await user.updatePassword(password);
     if (els.profileNewPassword) els.profileNewPassword.value = "";
     if (els.profileConfirmPassword) els.profileConfirmPassword.value = "";
-    setProfilePasswordMessage("密码更新成功");
-    toast("密码已更新");
+    setProfilePasswordMessage("パスワードを更新しました");
+    toast("パスワードを更新しました");
   } catch (error) {
     const msg = String(error?.message || "");
     if (msg.includes("requires-recent-login")) {
-      setProfilePasswordMessage("请重新登录后再修改密码", true);
+      setProfilePasswordMessage("再ログイン後にパスワードを変更してください", true);
     } else {
-      setProfilePasswordMessage(msg || "更新密码失败", true);
+      setProfilePasswordMessage(msg || "パスワード更新に失敗しました", true);
     }
   }
 }
 
 /* ---------------------------
- * 好友系统
+ * 友だち系统
  * Firestore collections:
  * - users
  * - friend_requests
@@ -2094,7 +2156,7 @@ async function searchUsers(query) {
       })
       .slice(0, 20);
   } catch (error) {
-    console.error("搜索用户异常:", error);
+    console.error("搜索ユーザー异常:", error);
     return [];
   }
 }
@@ -2108,7 +2170,7 @@ async function sendFriendRequest(toUserId) {
     const directId = `${myId}_${toUserId}`;
     const friendDoc = await fb.db.collection("friends").doc(directId).get();
     if (friendDoc.exists) {
-      toast("已是好友");
+      toast("すでに友だちです");
       return false;
     }
 
@@ -2120,7 +2182,7 @@ async function sendFriendRequest(toUserId) {
       .limit(1)
       .get();
     if (!pending.empty) {
-      toast("已发送请求");
+      toast("申請送信済み");
       return false;
     }
 
@@ -2133,10 +2195,10 @@ async function sendFriendRequest(toUserId) {
     });
   } catch (error) {
     console.error("Send friend request:", error);
-    toast("发送失败：" + (error?.message || "未知错误"));
+    toast("送信失敗：" + (error?.message || "不明なエラー"));
     return false;
   }
-  toast("好友请求已发送");
+  toast("友だち申請を送信しました");
   return true;
 }
 
@@ -2169,7 +2231,7 @@ async function acceptFriendRequest(requestId, fromUserId) {
     console.error("Create friendship:", error);
     return false;
   }
-  toast("已接受好友请求");
+  toast("友だち申請を承認しました");
   loadFriends();
   loadFriendRequests();
   return true;
@@ -2190,7 +2252,7 @@ async function rejectFriendRequest(requestId) {
     console.error("Reject request:", error);
     return false;
   }
-  toast("已拒绝");
+  toast("已拒否");
   loadFriendRequests();
   return true;
 }
@@ -2225,14 +2287,14 @@ async function loadFriendRequests() {
     console.warn("Load requests:", error);
     return;
   }
-  if (els.requestCount) els.requestCount.textContent = `${state.friendRequests.length} 条待处理`;
+  if (els.requestCount) els.requestCount.textContent = `${state.friendRequests.length} 件`;
   renderFriendRequests();
 }
 
 async function renderFriendsList() {
   if (!els.friendsList) return;
   if (!state.friends.length) {
-    els.friendsList.innerHTML = "<div class=\"listItem listItem--empty\">暂无好友</div>";
+    els.friendsList.innerHTML = "<div class=\"listItem listItem--empty\">友だちがいません</div>";
     return;
   }
   let users = [];
@@ -2244,14 +2306,17 @@ async function renderFriendsList() {
   }
   els.friendsList.innerHTML = users
     .map((u) => {
-      const name = u.name || u.email?.split("@")[0] || "用户";
-      const bio = (String(u.bio || "").trim() || "这个好友还没有填写简介。");
+      const name = u.name || u.email?.split("@")[0] || "ユーザー";
+      const bio = (String(u.bio || "").trim() || "この友だちはまだ自己紹介を書いていません。");
       return `
         <div class="listItem listItem--person">
           ${getUserAvatarHtml(u)}
           <div class="listItem__meta">
             <button class="friendNameBtn listItem__title listItem__title--full" type="button" data-friend-id="${escapeHtml(String(u.id || ""))}">${escapeHtml(name)}</button>
             <div class="friendBioInline" data-friend-bio-id="${escapeHtml(String(u.id || ""))}" hidden>${escapeHtml(bio)}</div>
+          </div>
+          <div class="listItem__actions">
+            <button class="btn btn--ghost btn--small" data-action="friend-chat" data-friend-id="${escapeHtml(String(u.id || ""))}" data-friend-name="${escapeHtml(name)}">チャット</button>
           </div>
         </div>
       `;
@@ -2268,12 +2333,184 @@ async function renderFriendsList() {
       bioEl.hidden = !bioEl.hidden;
     });
   });
+  els.friendsList.querySelectorAll("[data-action='friend-chat']").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const friendId = String(btn.getAttribute("data-friend-id") || "");
+      const friendName = String(btn.getAttribute("data-friend-name") || "");
+      if (!friendId) return;
+      await openFriendChatModal({ friendId, friendName });
+    });
+  });
+}
+
+function getFriendChatId(uidA, uidB) {
+  return [String(uidA || ""), String(uidB || "")].sort().join("__");
+}
+
+function cleanupFriendChatSubscription() {
+  if (friendChatUnsub) {
+    friendChatUnsub();
+    friendChatUnsub = null;
+  }
+}
+
+function closeFriendChatModal() {
+  cleanupFriendChatSubscription();
+  currentFriendChatId = "";
+  currentFriendTarget = null;
+  if (els.friendChatModal) {
+    els.friendChatModal.classList.remove("friendChatModal--open");
+    els.friendChatModal.setAttribute("aria-hidden", "true");
+  }
+  if (els.friendChatMessages) {
+    els.friendChatMessages.innerHTML = "";
+  }
+  if (els.friendChatTargetName) {
+    els.friendChatTargetName.textContent = "友だちを選んでチャットを開始";
+  }
+}
+
+async function openFriendChatModal(target = null) {
+  if (!state.user) {
+    openAuthModal("login");
+    return;
+  }
+  if (els.friendChatModal) {
+    els.friendChatModal.classList.add("friendChatModal--open");
+    els.friendChatModal.setAttribute("aria-hidden", "false");
+  }
+  await loadFriends();
+  await renderFriendChatFriendList(target?.friendId || "");
+  if (target?.friendId) {
+    await openConversationWithFriend(target.friendId, target.friendName || "");
+  }
+}
+
+async function renderFriendChatFriendList(activeFriendId = "") {
+  if (!els.friendChatFriendsList) return;
+  if (!state.friends.length) {
+    els.friendChatFriendsList.innerHTML = `<div class="listItem listItem--empty">友だちがいません</div>`;
+    return;
+  }
+
+  let users = [];
+  try {
+    users = await getUsersByIds(state.friends);
+  } catch (error) {
+    console.warn("friend chat users load failed:", error);
+  }
+  state.friendUsers = users;
+  els.friendChatFriendsList.innerHTML = users
+    .map((u) => {
+      const name = u.name || u.email?.split("@")[0] || "ユーザー";
+      const active = String(u.id) === String(activeFriendId) ? " friendChatFriend--active" : "";
+      return `<button class="friendChatFriend${active}" type="button" data-friend-id="${escapeHtml(String(u.id || ""))}" data-friend-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`;
+    })
+    .join("");
+
+  els.friendChatFriendsList.querySelectorAll(".friendChatFriend").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const friendId = String(btn.getAttribute("data-friend-id") || "");
+      const friendName = String(btn.getAttribute("data-friend-name") || "");
+      await openConversationWithFriend(friendId, friendName);
+      els.friendChatFriendsList
+        .querySelectorAll(".friendChatFriend")
+        .forEach((el) => el.classList.toggle("friendChatFriend--active", el === btn));
+    });
+  });
+}
+
+async function openConversationWithFriend(friendId, friendName) {
+  const fb = getFirebase();
+  const myId = getCurrentUserId();
+  if (!fb || !myId || !friendId) return;
+
+  cleanupFriendChatSubscription();
+  currentFriendTarget = { id: friendId, name: friendName || "友だち" };
+  currentFriendChatId = getFriendChatId(myId, friendId);
+  try {
+    await fb.db.collection("friend_chats").doc(currentFriendChatId).set(
+      {
+        users: [myId, friendId],
+        updated_at: window.firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.warn("init friend chat doc failed:", error);
+  }
+  if (els.friendChatTargetName) {
+    els.friendChatTargetName.textContent = `与 ${currentFriendTarget.name} チャット中`;
+  }
+  if (els.friendChatMessages) {
+    els.friendChatMessages.innerHTML = `<div class="listItem listItem--empty">読み込み中...</div>`;
+  }
+
+  const messagesRef = fb.db.collection("friend_chats").doc(currentFriendChatId).collection("messages");
+  friendChatUnsub = messagesRef
+    .orderBy("created_at", "asc")
+    .limitToLast(120)
+    .onSnapshot(
+      (snap) => {
+        if (!els.friendChatMessages) return;
+        if (snap.empty) {
+          els.friendChatMessages.innerHTML = `<div class="listItem listItem--empty">まだメッセージがありません。挨拶してみましょう</div>`;
+          return;
+        }
+        els.friendChatMessages.innerHTML = snap.docs
+          .map((doc) => {
+            const row = doc.data() || {};
+            const isSelf = String(row.from_user_id || "") === String(myId);
+            const name = isSelf ? "あなた" : (currentFriendTarget?.name || "友だち");
+            const ts = row.created_at && typeof row.created_at.toDate === "function" ? row.created_at.toDate() : null;
+            const time = ts ? ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+            const cls = isSelf ? "friendChatMsg friendChatMsg--self" : "friendChatMsg";
+            return `<div class="${cls}"><div class="friendChatMsg__meta">${escapeHtml(name)} ${escapeHtml(time)}</div><div>${escapeHtml(String(row.message || ""))}</div></div>`;
+          })
+          .join("");
+        els.friendChatMessages.scrollTop = els.friendChatMessages.scrollHeight;
+      },
+      (error) => {
+        console.warn("friend chat subscribe failed:", error);
+        if (els.friendChatMessages) {
+          const msg = escapeHtml(String(error?.message || "メッセージの読み込みに失敗しました"));
+          els.friendChatMessages.innerHTML = `<div class="listItem listItem--empty">${msg}</div>`;
+        }
+      }
+    );
+}
+
+async function sendFriendChatMessage() {
+  const fb = getFirebase();
+  const myId = getCurrentUserId();
+  const text = String(els.friendChatInput?.value || "").trim();
+  if (!fb || !myId || !currentFriendChatId || !currentFriendTarget?.id || !text) return;
+  try {
+    await fb.db.collection("friend_chats").doc(currentFriendChatId).set(
+      {
+        users: [myId, currentFriendTarget.id],
+        updated_at: window.firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+    await fb.db.collection("friend_chats").doc(currentFriendChatId).collection("messages").add({
+      from_user_id: myId,
+      to_user_id: currentFriendTarget.id,
+      message: text,
+      created_at: window.firebase.firestore.FieldValue.serverTimestamp(),
+    });
+    if (els.friendChatInput) els.friendChatInput.value = "";
+  } catch (error) {
+    console.warn("send friend chat failed:", error);
+    toast("送信失敗：" + (error?.message || "不明なエラー"));
+  }
 }
 
 async function renderFriendRequests() {
   if (!els.friendRequests) return;
   if (!state.friendRequests.length) {
-    els.friendRequests.innerHTML = "<div class=\"listItem listItem--empty\">暂无待处理请求</div>";
+    els.friendRequests.innerHTML = "<div class=\"listItem listItem--empty\">処理待ちの申請はありません</div>";
     return;
   }
   const fromIds = state.friendRequests.map((r) => r.from_user_id);
@@ -2288,7 +2525,7 @@ async function renderFriendRequests() {
     .map((req) => {
       const fromUser = users.find((u) => u.id === req.from_user_id);
       if (!fromUser) return "";
-      const name = fromUser.name || fromUser.email?.split("@")[0] || "用户";
+      const name = fromUser.name || fromUser.email?.split("@")[0] || "ユーザー";
       return `
         <div class="listItem listItem--person">
           ${getUserAvatarHtml(fromUser)}
@@ -2296,8 +2533,8 @@ async function renderFriendRequests() {
             <div class="listItem__title listItem__title--full">${escapeHtml(name)}</div>
           </div>
           <div class="listItem__actions">
-            <button class="btn btn--primary btn--small" data-action="accept" data-request-id="${req.id}" data-from-id="${req.from_user_id}">接受</button>
-            <button class="btn btn--ghost btn--small" data-action="reject" data-request-id="${req.id}">拒绝</button>
+            <button class="btn btn--primary btn--small" data-action="accept" data-request-id="${req.id}" data-from-id="${req.from_user_id}">承認</button>
+            <button class="btn btn--ghost btn--small" data-action="reject" data-request-id="${req.id}">拒否</button>
           </div>
         </div>
       `;
@@ -2323,13 +2560,13 @@ async function renderSearchResults(query) {
     els.searchResults.innerHTML = "";
     return;
   }
-  els.searchResults.innerHTML = "<div class=\"listItem listItem--empty\">搜索中...</div>";
+  els.searchResults.innerHTML = "<div class=\"listItem listItem--empty\">検索中...</div>";
   
-  // 检查用户是否登录
+  // 检查ユーザー是否登录
   const fb = getFirebase();
   const myId = getCurrentUserId();
   if (!fb || !myId) {
-    els.searchResults.innerHTML = "<div class=\"listItem listItem--empty\">请先登录</div>";
+    els.searchResults.innerHTML = "<div class=\"listItem listItem--empty\">先にログインしてください</div>";
     return;
   }
   
@@ -2340,12 +2577,12 @@ async function renderSearchResults(query) {
     console.log("搜索结果:", users, "查询:", query);
     
     if (users.length === 0) {
-      els.searchResults.innerHTML = "<div class=\"listItem listItem--empty\">未找到用户<br/><small style='opacity:0.6;font-size:0.85rem;margin-top:8px;display:block;'>可能的原因：<br/>1. 用户可能还未注册<br/>2. 邮箱/用户名不匹配<br/>3. 请检查浏览器控制台查看详细错误信息</small></div>";
+      els.searchResults.innerHTML = "<div class=\"listItem listItem--empty\">ユーザーが見つかりません</div>";
       return;
     }
   } catch (error) {
-    console.error("搜索出错:", error);
-    els.searchResults.innerHTML = "<div class=\"listItem listItem--empty\">搜索出错: " + (error.message || "未知错误") + "<br/><small style='opacity:0.6;font-size:0.85rem;margin-top:8px;display:block;'>请检查浏览器控制台查看详细错误</small></div>";
+    console.error("検索エラー:", error);
+    els.searchResults.innerHTML = "<div class=\"listItem listItem--empty\">検索エラー: " + (error.message || "不明なエラー") + "</div>";
     return;
   }
   let requests = [];
@@ -2358,22 +2595,22 @@ async function renderSearchResults(query) {
     requests = reqSnap.docs.map((d) => d.data());
     friends = friendSnap.docs.map((d) => d.data());
   } catch (error) {
-    console.error("加载好友关系失败:", error);
+    console.error("加载友だち关系失败:", error);
   }
   const sentIds = new Set((requests || []).map((r) => r.to_user_id));
   const friendIds = new Set((friends || []).map((f) => f.friend_id));
   els.searchResults.innerHTML = users
     .map((u) => {
-      const name = u.name || u.user_metadata?.name || u.email?.split("@")[0] || "用户";
+      const name = u.name || u.user_metadata?.name || u.email?.split("@")[0] || "ユーザー";
       const isFriend = friendIds.has(u.id);
       const hasRequest = sentIds.has(u.id);
       let actionBtn = "";
       if (isFriend) {
-        actionBtn = '<span class="muted">已是好友</span>';
+        actionBtn = '<span class="muted">すでに友だちです</span>';
       } else if (hasRequest) {
-        actionBtn = '<span class="muted">已发送请求</span>';
+        actionBtn = '<span class="muted">申請送信済み</span>';
       } else {
-        actionBtn = `<button class="btn btn--primary btn--small" data-action="add" data-user-id="${u.id}">添加好友</button>`;
+        actionBtn = `<button class="btn btn--primary btn--small" data-action="add" data-user-id="${u.id}">添加友だち</button>`;
       }
       return `
         <div class="listItem listItem--person">
@@ -2438,8 +2675,11 @@ function switchAuthTab(tab) {
  * --------------------------- */
 async function init() {
   await loadTracksFromTxt();
+  mountTopNavEveryPage();
   ensureChatOverlayMounted();
   bind();
+  updateVolumeButtonIcon(1);
+  updateRepeatButtonIcon(state.repeatMode);
   closeChatUserMenu();
   closeChatUserProfileCard();
   if (els.chatUserMenu) els.chatUserMenu.style.display = "none";

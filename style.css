@@ -257,6 +257,33 @@ body.is-player .bg__canvas {
   color: rgba(10, 10, 10, 0.92);
 }
 
+.deck__right.deck__right--hasGlobalNav {
+  padding-top: 70px;
+}
+
+.deck__right > .indexTopNav {
+  position: absolute;
+  top: 12px;
+  left: 18px;
+  right: 18px;
+  margin-top: 0;
+  z-index: 30;
+}
+
+body.is-player .indexTopNav,
+body.is-user .indexTopNav,
+body.is-player .indexBrand,
+body.is-user .indexBrand,
+body.is-player .indexNav,
+body.is-user .indexNav {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body.is-player .hamburgerMenu span,
+body.is-user .hamburgerMenu span {
+  background: rgba(255, 255, 255, 0.88);
+}
+
 /* 左黑右米：用 clip-path 切对角 */
 .deck__left::before,
 .deck__right::before {
@@ -459,12 +486,13 @@ body.is-player .bg__canvas {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  padding: 12px;
-  min-width: 160px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.74);
+  border: 0;
+  border-radius: 0;
+  padding: 8px 10px;
+  min-width: 170px;
+  box-shadow: none;
+  backdrop-filter: blur(6px);
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);
@@ -472,7 +500,7 @@ body.is-player .bg__canvas {
   z-index: 99;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .userMenu--dropdown[aria-hidden="false"] {
@@ -483,13 +511,21 @@ body.is-player .bg__canvas {
 
 .userMenu--dropdown .btn {
   width: 100%;
-  text-align: center;
+  text-align: left;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: rgba(12, 12, 12, 0.86) !important;
+  padding: 8px 4px;
+  font-weight: 600;
+  transform: none !important;
 }
 
 .userMenu--dropdown .userInfo {
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
+  gap: 2px;
   width: 100%;
 }
 
@@ -500,6 +536,24 @@ body.is-player .bg__canvas {
 
 .userMenu--dropdown .userInfo #myPageBtn {
   display: none;
+}
+
+.userMenu--dropdown .btn:hover {
+  background: transparent !important;
+  color: rgba(0, 0, 0, 1) !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.userMenu--dropdown .userName {
+  order: -1;
+  display: block;
+  color: rgba(0, 0, 0, 0.95);
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 2px 4px 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
 }
 
 .indexHero {
@@ -539,15 +593,18 @@ body.is-player .bg__canvas {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 16px;
-  margin-bottom: 0;
-  padding: 8px 16px;
+  margin: 0;
+  padding: 6px 12px;
   color: rgba(255, 255, 255, 1) !important;
   font-size: 0.85rem;
   opacity: 1 !important;
   animation: fadeInOut 2s ease-in-out infinite;
-  position: relative;
-  z-index: 10;
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none;
 }
 
 /* 首页时使用白色文字 */
@@ -604,6 +661,7 @@ body.is-index .swipeHint {
   gap: 10px;
   max-height: 260px;
   padding-right: 4px;
+  padding-bottom: 28px;
   overflow-y: auto;
   overflow-x: hidden;
   /* 保留滚动行为，但隐藏滚动条本身 */
@@ -1410,6 +1468,80 @@ body.is-entering .burst::after {
   line-height: 1;
 }
 
+.btn--withText {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn__iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn__iconSvg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  display: block;
+}
+
+.btn__text {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+#playBtn .icon-pause,
+#repeatBtn .icon-repeat-one,
+#volumeMute .icon-vol-low,
+#volumeMute .icon-vol-mute {
+  display: none;
+}
+
+#playBtn.is-playing .icon-play {
+  display: none;
+}
+
+#playBtn.is-playing .icon-pause {
+  display: block;
+}
+
+#repeatBtn[data-repeat-mode="one"] .icon-repeat {
+  display: none;
+}
+
+#repeatBtn[data-repeat-mode="one"] .icon-repeat-one {
+  display: block;
+}
+
+#volumeMute[data-volume-level="high"] .icon-vol-high {
+  display: block;
+}
+
+#volumeMute[data-volume-level="high"] .icon-vol-low,
+#volumeMute[data-volume-level="high"] .icon-vol-mute {
+  display: none;
+}
+
+#volumeMute[data-volume-level="low"] .icon-vol-high,
+#volumeMute[data-volume-level="low"] .icon-vol-mute {
+  display: none;
+}
+
+#volumeMute[data-volume-level="low"] .icon-vol-low {
+  display: block;
+}
+
+#volumeMute[data-volume-level="mute"] .icon-vol-high,
+#volumeMute[data-volume-level="mute"] .icon-vol-low {
+  display: none;
+}
+
+#volumeMute[data-volume-level="mute"] .icon-vol-mute {
+  display: block;
+}
+
 .btn--icon.btn--active {
   background: rgba(212, 175, 55, 0.2);
   border-color: rgba(212, 175, 55, 0.4);
@@ -1819,6 +1951,87 @@ body:not(.is-index) #playerRight .btn--primary {
   color: #0a0a0a;
 }
 
+/* 播放器页面：改为与首页同语言的浅色玻璃设计 */
+body.is-player .deck__right::before {
+  background:
+    radial-gradient(760px 520px at 70% 16%, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0) 65%),
+    radial-gradient(520px 320px at 18% 70%, color-mix(in oklab, var(--accent) 16%, #fff) 0%, rgba(255, 255, 255, 0) 72%),
+    linear-gradient(180deg, #f7f1e6, #efe6d7);
+  clip-path: polygon(68% 0, 100% 0, 100% 100%, 52% 100%);
+}
+
+body.is-player #playerRight {
+  color: rgba(0, 0, 0, 0.88);
+}
+
+body.is-player #playerRight .detail,
+body.is-player #playerRight .now,
+body.is-player #playerRight .playerBar,
+body.is-player #playerRight .progress,
+body.is-player #playerRight .chatPanel {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.56);
+  backdrop-filter: blur(10px) saturate(120%);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+body.is-player #playerRight .detail,
+body.is-player #playerRight .now,
+body.is-player #playerRight .progress {
+  border-radius: 16px;
+  padding: 12px;
+}
+
+body.is-player #playerRight .playerBar {
+  border-radius: 14px;
+  padding: 10px;
+}
+
+body.is-player #playerRight .chatPanel {
+  border-radius: 16px;
+}
+
+body.is-player #playerRight .detail__artist,
+body.is-player #playerRight .detail__album,
+body.is-player #playerRight .detail__time,
+body.is-player #playerRight .detail__sep,
+body.is-player #playerRight .now__title,
+body.is-player #playerRight .now__copy,
+body.is-player #playerRight .chatPanel__title,
+body.is-player #playerRight .chatMsg__text,
+body.is-player #playerRight .chatMsg__meta,
+body.is-player #playerRight .progress__meta {
+  color: rgba(0, 0, 0, 0.82);
+}
+
+body.is-player #playerRight .tag {
+  color: rgba(0, 0, 0, 0.78);
+  border-color: rgba(0, 0, 0, 0.16);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+/* Hide mood pill in player page */
+body.is-player #playerRight .tag {
+  display: none !important;
+}
+
+body.is-player #playerRight .btn--icon,
+body.is-player #playerRight .btn--ghost,
+body.is-player #playerRight .btn--back,
+body.is-player #playerRight .btn--chat {
+  color: rgba(0, 0, 0, 0.78);
+  border-color: rgba(0, 0, 0, 0.14);
+  background: rgba(255, 255, 255, 0.62);
+}
+
+body.is-player #playerRight .btn--icon:hover,
+body.is-player #playerRight .btn--ghost:hover,
+body.is-player #playerRight .btn--back:hover,
+body.is-player #playerRight .btn--chat:hover {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
 .playerHints {
   margin-top: 14px;
   display: flex;
@@ -1905,14 +2118,19 @@ body:not(.is-index) #playerRight .btn--primary {
   to { transform: rotate(360deg); }
 }
 
-/* 首页：黑胶缓慢自转（像待机中的唱片） */
+/* 首页：黑胶始终缓慢转动 */
 body.is-index .vinyl__disc {
   animation: vinylSpin 10000ms linear infinite;
 }
 
-/* 播放页 + 正在播放：黑胶按节奏快转（像在放歌） */
-body.is-playing .vinyl__disc {
-  animation: vinylSpin 1800ms linear infinite;
+/* 播放页默认静止 */
+body.is-player .vinyl__disc {
+  animation: none;
+}
+
+/* 播放页仅在播放中转动 */
+body.is-player.is-playing .vinyl__disc {
+  animation: vinylSpin 2800ms linear infinite;
 }
 
 .progress__bar {
@@ -2046,6 +2264,414 @@ body[data-mood] {
     radial-gradient(900px 520px at 70% 30%, color-mix(in oklab, var(--accent-2) 10%, transparent), transparent 64%),
     linear-gradient(135deg, var(--bg0), var(--bg1));
   transition: background 620ms var(--ease);
+}
+
+/* ------------------------------------------------------------------
+ * Player Redesign (vinylist reference)
+ * ------------------------------------------------------------------ */
+body.is-player .deck {
+  grid-template-columns: 0.95fr 1.05fr;
+}
+
+body.is-player .deck__left::before {
+  background:
+    radial-gradient(780px 420px at 22% 15%, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 62%),
+    linear-gradient(180deg, #0a121c, #0a1018);
+  clip-path: polygon(0 0, 66% 0, 50% 100%, 0 100%);
+}
+
+body.is-player .deck__right::before {
+  background:
+    radial-gradient(640px 440px at 78% 18%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 65%),
+    linear-gradient(180deg, #efe6d4, #e8ddc8);
+  clip-path: polygon(66% 0, 100% 0, 100% 100%, 50% 100%);
+}
+
+body.is-player .deck__left::after {
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0) 46%, rgba(255, 255, 255, 0.18) 50%, rgba(255, 255, 255, 0) 54%);
+  opacity: 0.26;
+}
+
+body.is-player #playerLeft {
+  position: relative;
+  z-index: 4;
+  padding-top: 42px;
+  width: min(640px, 74%);
+}
+
+body.is-player #playerLeft .listHead__label {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+}
+
+body.is-player #playerLeft .listHead__sub {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1.12rem;
+  margin-top: 6px;
+}
+
+body.is-player #playerLeft .listItem {
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+body.is-player #playerLeft .listItem:hover {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+body.is-player #playerLeft .listItem__idx {
+  display: none;
+}
+
+body.is-player #playerLeft .listItem__desc {
+  display: none;
+}
+
+body.is-player #playerLeft .listItem__icon {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  font-size: 0.95rem;
+  opacity: 0.92;
+}
+
+body.is-player #playerLeft .listItem__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+body.is-player #playerLeft .listItem__title {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.is-player #playerLeft .listItem__dur {
+  display: none;
+}
+
+body.is-player #playerRight {
+  position: relative;
+  z-index: 4;
+  color: rgba(15, 14, 12, 0.9);
+  padding-top: 56px;
+}
+
+body.is-player #playerRight .detail {
+  grid-template-columns: 124px 1fr;
+  gap: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.42);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+/* Hide cover art in player info block */
+body.is-player #playerRight .cover {
+  display: none !important;
+}
+
+body.is-player #playerRight .detail {
+  grid-template-columns: 1fr;
+}
+
+body.is-player #playerRight .cover {
+  width: 124px;
+  height: 124px;
+  border-radius: 8px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+}
+
+body.is-player #playerRight .detail__artist {
+  color: rgba(0, 0, 0, 0.58);
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+body.is-player #playerRight .detail__album {
+  color: rgba(0, 0, 0, 0.9);
+  font-size: 1.18rem;
+  font-family: var(--font-display);
+  font-weight: 760;
+}
+
+body.is-player #playerRight .now {
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+body.is-player #playerRight .now__title {
+  color: rgba(0, 0, 0, 0.84);
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+}
+
+body.is-player #playerRight .now__copy {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 0.92rem;
+}
+
+body.is-player #playerRight .playerBar,
+body.is-player #playerRight .progress {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.42);
+  border-radius: 14px;
+}
+
+body.is-player #playerRight .btn--icon,
+body.is-player #playerRight .btn--ghost,
+body.is-player #playerRight .btn--back,
+body.is-player #playerRight .btn--chat {
+  color: rgba(0, 0, 0, 0.8);
+  border-color: rgba(0, 0, 0, 0.14);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+body.is-player #playerRight .btn--icon:hover,
+body.is-player #playerRight .btn--ghost:hover,
+body.is-player #playerRight .btn--back:hover,
+body.is-player #playerRight .btn--chat:hover {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+body.is-player #playerRight .chatPanel {
+  background: rgba(13, 18, 26, 0.92);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+body.is-player #playerRight .chatPanel__title,
+body.is-player #playerRight .chatMsg__text,
+body.is-player #playerRight .chatMsg__meta,
+body.is-player #playerRight .chatPanel__inputWrap input,
+body.is-player #playerRight .progress__meta {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body.is-player .vinyl {
+  display: block;
+  left: 47%;
+  top: 50%;
+  width: min(500px, 46vw);
+  opacity: 0.92;
+  z-index: 3;
+  filter: drop-shadow(0 26px 54px rgba(0, 0, 0, 0.55));
+}
+
+body.is-player .vinyl__arm {
+  opacity: 0;
+  right: 8%;
+  top: 2%;
+  width: 56%;
+  height: 56%;
+  transform: rotate(8deg);
+  clip-path: polygon(78% 6%, 100% 10%, 89% 20%, 66% 14%);
+}
+
+body.is-player .vinyl__disc {
+  animation: none;
+}
+
+/* Player layout cleanup: avoid overlap, keep luxury spacing */
+body.is-player #playerRight {
+  --player-right-offset: clamp(120px, 11vw, 210px);
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+body.is-player #playerRight .detail,
+body.is-player #playerRight .now,
+body.is-player #playerRight .playerBar,
+body.is-player #playerRight .progress,
+body.is-player #playerRight .chatPanel {
+  margin-left: var(--player-right-offset);
+  width: calc(100% - var(--player-right-offset));
+  background: transparent;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* chat panel extra inset to avoid vinyl overlap */
+body.is-player #playerRight .chatPanel {
+  margin-left: calc(var(--player-right-offset) + 24px);
+  width: calc(100% - var(--player-right-offset) - 24px);
+}
+
+body.is-player #playerRight .now {
+  margin-left: var(--player-right-offset);
+}
+
+/* 进度条放在播放按键下方（不与黑胶重叠） */
+body.is-player #playerRight .progress--wide {
+  position: static;
+  transform: none;
+  top: auto;
+  left: auto;
+  width: calc(100% - var(--player-right-offset));
+  min-width: 0;
+  padding: 0;
+  margin-top: 4px;
+  margin-left: var(--player-right-offset);
+}
+
+/* 黑胶上方信息与控制保留简洁排版 */
+body.is-player #playerRight .detail,
+body.is-player #playerRight .now,
+body.is-player #playerRight .playerBar {
+  padding: 0;
+  border-radius: 0;
+}
+
+/* Improve title readability */
+body.is-player #playerRight .now__title {
+  color: rgba(255, 255, 255, 0.96);
+  font-family: var(--font-display);
+  font-size: clamp(1.28rem, 2.2vw, 1.72rem);
+  letter-spacing: 0;
+  text-transform: none;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+body.is-player #playerRight .detail__album {
+  color: rgba(255, 255, 255, 0.94);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+body.is-player #playerRight .detail__artist,
+body.is-player #playerRight .now__copy {
+  color: rgba(255, 255, 255, 0.84);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+}
+
+/* Hide top-right time row (dot + 0:00/1:56) */
+body.is-player #playerRight .detail__sep,
+body.is-player #playerRight #detailTime {
+  display: none !important;
+}
+
+/* Player controls: flat icon style (no circles), like transport deck */
+body.is-player #playerRight .playerBar {
+  gap: 14px;
+  align-items: center;
+}
+
+body.is-player #playerRight .playerBar .btn--icon {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0;
+  border-radius: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+body.is-player #playerRight .playerBar .btn--icon:hover {
+  background: transparent !important;
+  color: #ffffff;
+  transform: scale(1.06);
+}
+
+body.is-player #playerRight .playerBar .btn__iconSvg {
+  width: 24px;
+  height: 24px;
+}
+
+body.is-player #playerRight .playerBar .btn--withText {
+  width: auto;
+  min-width: fit-content;
+  padding: 0 14px;
+  gap: 8px;
+}
+
+body.is-player #playerRight .playerBar .btn--withText .btn__text {
+  white-space: nowrap;
+  writing-mode: horizontal-tb;
+  line-height: 1;
+}
+
+body.is-player #playerRight .playerBar #playBtn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border: 0 !important;
+  background: transparent !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+body.is-player #playerRight .playerBar #playBtn:hover {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+body.is-player #playerRight .playerBar #chatBtn,
+body.is-player #playerRight .playerBar #backBtn {
+  opacity: 0.9;
+}
+
+/* Hide play text, icon only */
+body.is-player #playerRight .playerBar #playBtn .btn__text {
+  display: none;
+}
+
+/* Chat send button: black background + white text */
+body.is-player #chatSend {
+  background: #0f0f11 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: none !important;
+}
+
+body.is-player #chatSend:hover {
+  background: #1a1a1f !important;
+}
+
+@media (max-width: 860px) {
+  body.is-player #playerRight .progress--wide {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    left: auto;
+    top: auto;
+    margin-left: 0;
+  }
+  body.is-player #playerRight .detail,
+  body.is-player #playerRight .now,
+  body.is-player #playerRight .playerBar,
+  body.is-player #playerRight .chatPanel {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
 @media (max-width: 860px) {
@@ -2202,10 +2828,399 @@ body[data-mood] {
   margin-top: -4px;
 }
 
+.friendChatModal {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms var(--ease);
+}
+
+.friendChatModal--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.friendChatModal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.friendChatModal__content {
+  position: relative;
+  z-index: 1;
+  width: min(920px, 94vw);
+  height: min(600px, 86vh);
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: var(--bg1);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.friendChatModal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.friendChatModal__title {
+  font-weight: 700;
+}
+
+.friendChatModal__body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 0;
+}
+
+.friendChatModal__friends {
+  border-right: 1px solid var(--stroke);
+  padding: 12px;
+  overflow: auto;
+}
+
+.friendChatModal__sub {
+  font-size: 0.86rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.friendChatFriendsList {
+  display: grid;
+  gap: 8px;
+}
+
+.friendChatFriend {
+  width: 100%;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  text-align: left;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.friendChatFriend--active {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.friendChatModal__chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.friendChatModal__target {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--stroke);
+  font-weight: 600;
+}
+
+.friendChatMessages {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friendChatMsg {
+  max-width: 78%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.friendChatMsg--self {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.friendChatMsg__meta {
+  font-size: 0.74rem;
+  color: #000;
+  margin-bottom: 2px;
+}
+
+.friendChatInputWrap {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--stroke);
+}
+
+.friendChatInputWrap input {
+  flex: 1;
+  border: 1px solid var(--stroke);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 10px 14px;
+}
+
+@media (max-width: 860px) {
+  .friendChatModal__body {
+    grid-template-columns: 1fr;
+  }
+  .friendChatModal__friends {
+    max-height: 180px;
+    border-right: 0;
+    border-bottom: 1px solid var(--stroke);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     scroll-behavior: auto !important;
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* ===== Black & White Theme: My Page + Friend Chat ===== */
+body.is-user #userLeft,
+body.is-user #userRight {
+  color: #f5f5f5;
+}
+
+body.is-user #userLeft .listHead__label,
+body.is-user #userRight .listHead__label {
+  color: #ffffff;
+}
+
+body.is-user #userLeft .listHead__sub,
+body.is-user #userRight .listHead__sub {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+body.is-user .userProfile__avatar {
+  background: #111;
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+body.is-user .userProfile__name {
+  color: #fff;
+}
+
+body.is-user .userProfile__bio,
+body.is-user .userProfile__statLabel {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+body.is-user .userProfile__statValue {
+  color: #fff;
+}
+
+body.is-user .profileEditor__input,
+body.is-user .profileEditor__textarea,
+body.is-user .friendSearch {
+  background: rgba(0, 0, 0, 0.56);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+body.is-user .profileEditor__input::placeholder,
+body.is-user .profileEditor__textarea::placeholder,
+body.is-user .friendSearch::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.is-user #userRight .listItem,
+body.is-user #searchResults .listItem,
+body.is-user #friendRequests .listItem,
+body.is-user #friendsList .listItem {
+  background: rgba(0, 0, 0, 0.46);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+body.is-user #userRight .friendSection {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+body.is-user #userRight .listItem--empty {
+  background: transparent !important;
+  border: 0 !important;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+body.is-user #profileSaveBtn,
+body.is-user #profilePasswordBtn {
+  width: auto;
+  justify-self: start;
+  align-self: start;
+  min-width: 112px;
+  padding: 8px 14px;
+}
+
+body.is-user #userRight .btn--primary,
+body.is-user #userLeft .btn--primary {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+body.is-user #userRight .btn--ghost,
+body.is-user #userLeft .btn--ghost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #fff;
+}
+
+.friendChatModal__content {
+  background: #0f0f0f;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f5f5f5;
+}
+
+.friendChatModal__head,
+.friendChatModal__friends,
+.friendChatModal__target,
+.friendChatInputWrap {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.friendChatModal__sub,
+.friendChatMsg__meta {
+  color: rgba(255, 255, 255, 0.64);
+}
+
+.friendChatMsg--self .friendChatMsg__meta {
+  color: rgba(0, 0, 0, 0.72);
+}
+
+.friendChatFriend {
+  background: #151515;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #f5f5f5;
+}
+
+.friendChatFriend:hover {
+  background: #1d1d1d;
+}
+
+.friendChatFriend--active {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.friendChatMessages {
+  background: #0b0b0b;
+}
+
+.friendChatMsg {
+  background: #161616;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #f3f3f3;
+}
+
+.friendChatMsg--self {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+.friendChatInputWrap input {
+  background: #0d0d0d;
+  border-color: rgba(255, 255, 255, 0.24);
+  color: #fff;
+}
+
+.friendChatInputWrap input::placeholder {
+  color: rgba(255, 255, 255, 0.44);
+}
+
+#friendChatSend {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+#friendChatSend:hover {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+}
+
+/* iPad: keep desktop-like layout without redesign */
+@media (min-width: 744px) and (max-width: 1024px) {
+  .deck {
+    grid-template-columns: 1.1fr 0.9fr !important;
+  }
+
+  body.is-index .deck {
+    grid-template-columns: 0.9fr 1.1fr !important;
+  }
+
+  body.is-player .deck {
+    grid-template-columns: 0.95fr 1.05fr !important;
+  }
+
+  .deck__left::before {
+    clip-path: polygon(0 0, 68% 0, 52% 100%, 0 100%) !important;
+  }
+
+  .deck__right::before {
+    clip-path: polygon(68% 0, 100% 0, 100% 100%, 52% 100%) !important;
+  }
+
+  .deck__left::after {
+    clip-path: none !important;
+  }
+
+  body.is-player .deck__left::before {
+    clip-path: polygon(0 0, 66% 0, 50% 100%, 0 100%) !important;
+  }
+
+  body.is-player .deck__right::before {
+    clip-path: polygon(66% 0, 100% 0, 100% 100%, 50% 100%) !important;
+  }
+
+  .deck__right {
+    padding-top: 18px !important;
+  }
+
+  .vinyl {
+    left: 62% !important;
+    top: 52% !important;
+    width: min(420px, 44vw) !important;
+  }
+
+  body.is-index .vinyl {
+    left: 24% !important;
+    top: 40% !important;
+    width: min(560px, 54vw) !important;
+  }
+
+  body.is-player #playerRight .detail,
+  body.is-player #playerRight .now,
+  body.is-player #playerRight .playerBar,
+  body.is-player #playerRight .chatPanel {
+    width: calc(100% - var(--player-right-offset)) !important;
+    margin-left: var(--player-right-offset) !important;
+  }
+
+  body.is-player #playerRight .progress--wide {
+    width: calc(100% - var(--player-right-offset)) !important;
+    margin-left: var(--player-right-offset) !important;
   }
 }
